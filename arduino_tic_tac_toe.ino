@@ -52,7 +52,7 @@ void setup(){
     else{
 
         digitalWrite(PLAYER_WINNER, HIGH);
-        digitalWrite(PLAYER_WINNER, HIGH);
+        digitalWrite(COMPUTER_WINNER, HIGH);
 
     }
     
