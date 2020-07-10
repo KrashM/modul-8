@@ -17,15 +17,8 @@ void setup(){
   
   	Serial.begin(9600);
   
-    pinMode(RIGHT_BOTTOM, OUTPUT);
-    pinMode(MID_BOTTOM, OUTPUT);
-    pinMode(LEFT_BOTTOM, OUTPUT);
-    pinMode(RIGHT_MIDDLE, OUTPUT);
-    pinMode(MID_MIDDLE, OUTPUT);
-    pinMode(LEFT_MIDDLE, OUTPUT);
-    pinMode(RIGHT_TOP, OUTPUT);
-    pinMode(MID_TOP, OUTPUT);
-    pinMode(LEFT_TOP, OUTPUT);
+  	for(int i = RIGHT_BOTTOM; i <= LEFT_TOP; i++)
+      	pinMode(i, OUTPUT);
 
     attachInterrupt(digitalPinToInterrupt(RECEIVE_PIN), receive, RISING); 
     attachInterrupt(digitalPinToInterrupt(END_PIN), end, RISING);
@@ -40,7 +33,7 @@ void receive(){
 
 void end(){
 
-    digitalWrite(number, HIGH);
+    digitalWrite(number + 3, HIGH);
     number = 0;
   
 }

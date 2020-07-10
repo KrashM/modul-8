@@ -9,21 +9,22 @@
 #define TX_PIN_AI 4
 #define END_TX_PLAYER 3
 #define END_TX_AI 5
+#define PLAYER_WINNER 12
+#define COMPUTER_WINNER 13
       
 char* board = "123456789";
 
-const byte ROWS = 4; //four rows
-const byte COLS = 4; //four columns
+const byte ROWS = 3; //four rows
+const byte COLS = 3; //four columns
 
 char keys[ROWS][COLS] = {
-  {'1','2','3','A'},
-  {'4','5','6','B'},
-  {'7','8','9','C'},
-  {'*','0','#','D'}
+  {'1','2','3'},
+  {'4','5','6'},
+  {'7','8','9'}
 };
 
-byte rowPins[ROWS] = {6, 7, 8, 9}; //connect to the row pinouts of the keypad
-byte colPins[COLS] = {10, 11, 12, 13}; //connect to the column pinouts of the keypad
+byte rowPins[ROWS] = {6, 7, 8}; //connect to the row pinouts of the keypad
+byte colPins[COLS] = {9, 10, 11}; //connect to the column pinouts of the keypad
 
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
@@ -42,10 +43,18 @@ void setup(){
   	pinMode(TX_PIN_AI, OUTPUT);
   	pinMode(END_TX_PLAYER, OUTPUT);
   	pinMode(END_TX_AI, OUTPUT);
+  	pinMode(PLAYER_WINNER, OUTPUT);
+  	pinMode(COMPUTER_WINNER, OUTPUT);
   
     char* result = game();
-    if(result == "TIE") Serial.println(result);
-    Serial.println(strcat(result, " WINS!!!"));
+  	if(result == "X") digitalWrite(PLAYER_WINNER, HIGH);
+  	if(result == "O") digitalWrite(COMPUTER_WINNER, HIGH);
+    else{
+
+        digitalWrite(PLAYER_WINNER, HIGH);
+        digitalWrite(PLAYER_WINNER, HIGH);
+
+    }
     
 }
 
@@ -102,23 +111,6 @@ void update_board(int i, bool player){
 void undo(int i){
 
     board[i] = i + 1;
-
-}
-
-void show_game_state(){
-
-    Serial.print(board[0]);
-    Serial.print(board[1]);
-    Serial.print(board[2]);
-    Serial.println();
-  	Serial.print(board[3]);
-    Serial.print(board[4]);
-    Serial.print(board[5]);
-    Serial.println();
-  	Serial.print(board[6]);
-    Serial.print(board[7]);
-    Serial.print(board[8]);
-    Serial.println();
 
 }
 
@@ -305,29 +297,24 @@ struct value_move minimax_with_pruning(int depth, int alpha, int beta, bool isMa
           
 void computer_turn(){
   
-  	Serial.println("On computer turn");
-  
     //move = minimax(9, True).move;
     int move = minimax_with_pruning(3, -INFINITY, INFINITY, true).move;
-  	Serial.println(move + 1);	
   	update_board(move, false);
   	for(int i = 0; i < move + 1; i++){
     
       	digitalWrite(TX_PIN_AI, HIGH);
-      	delay(100);
+      	delay(20);
       	digitalWrite(TX_PIN_AI, LOW);
     
   	}
   	digitalWrite(END_TX_AI, HIGH);
-  	delay(100);
+  	delay(20);
   	digitalWrite(END_TX_AI, LOW);
     show_game_state();
     
 }
 
 void player_turn(){
-  
-  	Serial.println("On player turn");
 
     int moves[9];
     get_possible_moves(moves);
@@ -338,7 +325,6 @@ void player_turn(){
         selection = keypad.getKey() - 49;
       	if(moves[selection] == 1){
           	
-          	Serial.println(selection + 1);
           	update_board(selection, true);
         	flag = false;
           
@@ -348,12 +334,12 @@ void player_turn(){
   	for(int i = 0; i < selection + 1; i++){
     
       	digitalWrite(TX_PIN_PLAYER, HIGH);
-      	delay(100);
+      	delay(20);
       	digitalWrite(TX_PIN_PLAYER, LOW);
     
   	}
   	digitalWrite(END_TX_PLAYER, HIGH);
-  	delay(100);
+  	delay(20);
   	digitalWrite(END_TX_PLAYER, LOW);
     show_game_state();
    
